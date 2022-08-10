@@ -1,5 +1,4 @@
 #include "utils.hh"
-#include <Windows.h>
 #include <vector>
 
 
@@ -111,7 +110,7 @@ const auto pattern_to_byte(const char* pattern)
 		return bytesmm;
 }
 
-__int8* utils::sigscan(const char* pattern, const char* mod)
+uintptr_t utils::sigscan(const char* pattern, const char* mod  )
 {
 	uintptr_t moduleAdressmm = 0;
 	moduleAdressmm = (uintptr_t)GetModuleHandleA(mod);
@@ -134,7 +133,7 @@ __int8* utils::sigscan(const char* pattern, const char* mod)
 				break;
 			}
 		}
-		if (foundmm) { return reinterpret_cast<__int8*>(&scanBytesmm[imm]); }
+		if (foundmm) { return reinterpret_cast<uintptr_t>(&scanBytesmm[imm]); }
 	}
 	return NULL;
 }

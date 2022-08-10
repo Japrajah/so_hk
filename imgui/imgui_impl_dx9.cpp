@@ -48,7 +48,7 @@ struct CUSTOMVERTEX
 static void ImGui_ImplDX9_SetupRenderState(ImDrawData* draw_data)
 {
     // Setup viewport
-    D3DVIEWPORT9 vp;
+    D3DVIEWPORT9 vp{};
     vp.X = vp.Y = 0;
     vp.Width = (DWORD)draw_data->DisplaySize.x;
     vp.Height = (DWORD)draw_data->DisplaySize.y;
@@ -216,6 +216,7 @@ void ImGui_ImplDX9_RenderDrawData(ImDrawData* draw_data)
     g_pd3dDevice->SetTransform(D3DTS_PROJECTION, &last_projection);
 
     // Restore the DX9 state
+
     d3d9_state_block->Apply();
     d3d9_state_block->Release();
 }
@@ -225,7 +226,7 @@ bool ImGui_ImplDX9_Init(IDirect3DDevice9* device)
     // Setup back-end capabilities flags
     ImGuiIO& io = ImGui::GetIO();
     io.BackendRendererName = "imgui_impl_dx9";
-    io.BackendFlags |= ImGuiBackendFlags_RendererHasVtxOffset;  // We can honor the ImDrawCmd::VtxOffset field, allowing for large meshes.
+    io.BackendFlags |= ImGuiBackendFlags_None;  // We can honor the ImDrawCmd::VtxOffset field, allowing for large meshes.
 
     g_pd3dDevice = device;
     g_pd3dDevice->AddRef();
