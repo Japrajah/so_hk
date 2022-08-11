@@ -34,13 +34,18 @@ void DrawEsp()
 		if (!list_position) break;
 		auto entity = entity_mngr->getEntity(list_position->EntityId);
 		list_position = list_position->_next;
-	
 		if (!entity) continue;
 		Vector3 position = entity->position();
 		Vector2 ScreenPos;
-	
 		if (!camera->WorldToScreen(position,&ScreenPos)) continue;
-		CDraw::Text(ScreenPos.x, ScreenPos.y, "TEST TEXT");
+		auto etype = entity->type();
+		if (!etype) continue;
+		auto class_type = etype->pClass_;
+		if (!class_type) continue;
+		auto full_name = class_type->GetFullName();
+        CDraw::Text(ScreenPos.x, ScreenPos.y, full_name.c_str());
+
+
 	}
 
 

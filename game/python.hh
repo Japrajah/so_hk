@@ -362,7 +362,7 @@ typedef struct _typeobject {
 			if (!parrent) break;
 			auto name = parrent->GetName();
 			if (!name) break;
-			temp = temp + " : "  + std::string(name);
+			temp = temp + "."  + std::string(name);
 		}
 		return temp;
 	}

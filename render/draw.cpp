@@ -4,7 +4,7 @@ void CDraw::Setup(LPDIRECT3DDEVICE9 device)
 {
 	if (CDraw::pDevice) return;
 	CDraw::pDevice = device;
-	D3DXCreateFontA(CDraw::pDevice, 17, 0, FW_BOLD, 0, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, ANTIALIASED_QUALITY, DEFAULT_PITCH | FF_DONTCARE, TEXT("Arial"), &CDraw::m_font);
+	D3DXCreateFontA(CDraw::pDevice, 14, 0, FW_NORMAL, 0, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, ANTIALIASED_QUALITY, DEFAULT_PITCH | FF_DONTCARE, TEXT("Arial"), &CDraw::m_font);
 }
 
 
