@@ -370,4 +370,3 @@ typedef struct _typeobject {
 	
 
 } PyTypeObject;
-auto size = sizeof(_typeobject);
