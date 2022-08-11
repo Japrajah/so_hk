@@ -10,6 +10,7 @@ public:
 	ADD_PTR(pfn_Steam_Present);
 	ADD_PTR(g_imp_Camera);
 
+
 };
 
 #undef ADD_PTR
