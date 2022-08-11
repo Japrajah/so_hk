@@ -1,6 +1,7 @@
 #pragma once
 #include <Windows.h>
 #include "Vectors.hh"
+#include "python.hh"
 #define OFFSET( type, func, offset )  type func()  { return *reinterpret_cast< type *> ( (uintptr_t )this  + offset ); };
 
 
@@ -8,12 +9,16 @@ class Physics;
 class Filter;
 struct EntityType;
 //https://github.com/v2v3v4/BigWorld-Engine-2.0.1/blob/620e0f244739188a5b183f1f28b278f16d182370/src/client/entity_type.hpp
+
+
+
 struct EntityType
 {
 	class EntityDescription* description_;
 	class PyObject* pModule_;
-	class PyTypeObject* pClass_;
-	class PyTypeObject* pPlayerClass_;
+	 PyTypeObject* pClass_;
+	 PyTypeObject* pPlayerClass_;
+	 
 };
 
 class Entity /*: public PyInstancePlus : public PyObject*/
@@ -89,8 +94,9 @@ public:
 
 class EntityManager
 {
-
+	
 public:
+	OFFSET(int, EntityCount, 0x14);
 	static EntityManager* instance();
 	Entity* __thiscall getEntity(int id, bool b_check_cache);
 };

@@ -1,8 +1,13 @@
 #include "draw.h"
+#pragma comment (lib, "d3dx9.lib")
 void CDraw::Setup(LPDIRECT3DDEVICE9 device)
 {
-    CDraw::pDevice = device;
+	if (CDraw::pDevice) return;
+	CDraw::pDevice = device;
+	D3DXCreateFontA(CDraw::pDevice, 17, 0, FW_BOLD, 0, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, ANTIALIASED_QUALITY, DEFAULT_PITCH | FF_DONTCARE, TEXT("Arial"), &CDraw::m_font);
 }
+
+
 void CDraw::DrawLine(int bx, int by, int bw, D3DCOLOR COLOR)
 {
    
@@ -12,4 +17,14 @@ void CDraw::DrawLine(int bx, int by, int bw, D3DCOLOR COLOR)
         rec.x2 = bx + bw;//makes line longer/shorter going right
     rec.y2 = by + 1;//makes line one pixel tall
     CDraw::pDevice->Clear(1, &rec, D3DCLEAR_TARGET, COLOR, 0, 0);
+}
+
+void CDraw::Text( unsigned int x, unsigned int y, const char* Message ,D3DCOLOR color )
+{	// Create a colour for the text
+	RECT rct; //Font
+	rct.left = x;
+	rct.right = 1680;
+	rct.top = y;
+	rct.bottom = rct.top + 200;
+	m_font->DrawTextA(NULL, Message, -1, &rct, 0, color);
 }

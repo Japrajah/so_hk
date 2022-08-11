@@ -3,6 +3,6 @@
 struct utils
 {
 	static uintptr_t sigscan(const char* pattern, const char* mod = nullptr);
-	static __int8* read_address(__int8* address, int offset, int size);
+	static uintptr_t read_address(uintptr_t address, int offset, int size);
 };
 

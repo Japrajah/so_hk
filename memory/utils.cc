@@ -138,6 +138,6 @@ uintptr_t utils::sigscan(const char* pattern, const char* mod  )
 	return NULL;
 }
 
-__int8* utils::read_address(__int8* address, int offset, int size) {
-	return (__int8*)((uintptr_t)address + size + *(int*)((uintptr_t)address + offset));
+uintptr_t utils::read_address(uintptr_t address, int offset, int size) {
+	return (address + size + *(int*)(address + offset));
 }

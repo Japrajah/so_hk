@@ -1,7 +1,5 @@
-﻿#include <Windows.h>
+﻿#include "memory/Addr.hh"
 #include "render/draw.h"
-#include "memory/Addr.hh"
-
 typedef LRESULT(CALLBACK* WNDPROC)(HWND, UINT, WPARAM, LPARAM);
  
 int(__stdcall* oPresent)(LPDIRECT3DDEVICE9 _this, CONST RECT* pSourceRect, CONST RECT* pDestRect, HWND hDestWindowOverride, CONST RGNDATA* pDirtyRegion) = 0;
@@ -17,25 +15,9 @@ bool show,test = true;
 bool init = false;
 int  __stdcall hkPresent(LPDIRECT3DDEVICE9 _this, CONST RECT* pSourceRect, CONST RECT* pDestRect, HWND hDestWindowOverride, CONST RGNDATA* pDirtyRegion)
 {
-
-	//if (!init)
-	//{
-
-	//	//InitImGui(_this);
-	//	oWndProc = (WNDPROC)SetWindowLongPtr(window, GWLP_WNDPROC, (LONG_PTR)WndProc);
-	//	init = true;
-	//	return oPresent(_this, pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);
-	//}
-
-	
-
-
-	if (GetAsyncKeyState(VK_INSERT) & 1)
-		show = !show;
-	
 	CDraw::Setup(_this);
-	CDraw::DrawLine(150, 200, 100, D3DCOLOR_ARGB(255, 255, 0, 0));
 
+	CDraw::Text(350, 250, "TEST TEXT");
 
 	
 

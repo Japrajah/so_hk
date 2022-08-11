@@ -8,6 +8,7 @@ public:
 	ADD_PTR(pfn_EntityManager_instance);
 	ADD_PTR(pfn_EntityManager_getEntity);
 	ADD_PTR(pfn_Steam_Present);
+	ADD_PTR(g_imp_Camera);
 
 };
 
