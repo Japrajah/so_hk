@@ -40,38 +40,17 @@ void DrawEsp()
 		Vector3 position = entity->position();
 		Vector2 ScreenPos;
 		if ((!camera->WorldToScreen(position, &ScreenPos)) && init) continue;
-		auto obtype = entity->ob_type;
-		if (!obtype) continue;
-
-		const char* shortName = obtype->GetName();
-		if (!strcmp(shortName ,"Avatar"));
-		{
-			if (obtype->tp_getattro)
-			{
-				auto py_STR = PyHelpers::PyString_InternFromString("name");
-				if (py_STR)
-				{
-
-					PyUnicodeObject* playername = obtype->GetAttribute<PyUnicodeObject*>(entity, py_STR);
+	
+		const char* shortName = entity->GetNameClass();
+		if (strcmp((char*)shortName, (char*)"Avatar") != 0) continue;
+		
+					PyUnicodeObject* playername = entity->GetAttribute<PyUnicodeObject*>(PyName("name") );
 					if (playername)
 					{
-						if (playername->str)
-						{
-							CDraw::TextW(ScreenPos.x, ScreenPos.y, playername->str);
-						}
+						auto name = playername->str;
+						if (name)
+							CDraw::TextW(ScreenPos.x, ScreenPos.y, name);
 					}
-					
-				}
-
-			
-
-				
-			
-			}
-			
-		}
-
-
 		
 		//entity->DumpProperties();
 

@@ -91,8 +91,8 @@
 
 //
 //#define _PyObject_HEAD_EXTRA		\
-//	struct _object *_ob_next;	\
-//	struct _object *_ob_prev;
+//	struct PyObject *_ob_next;	\
+//	struct PyObject *_ob_prev;
 //
 //#define PyObject_HEAD			\
 //	_PyObject_HEAD_EXTRA		\
@@ -103,53 +103,9 @@
 
 #include <cstdio>
 #include <string>
+#define PyName(text) (PyObject*)"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"##text"\x00\x00\x00\x00"
+struct PyObject;
 typedef size_t		Py_ssize_t;
-typedef struct _object {
-    // int vtable; 
-    //struct _object* _ob_next;	
-    //struct _object* _ob_prev; // _PyObject_HEAD_EXTRA
-    size_t ob_refcnt;		//    0x8
-    struct _typeobject* ob_type; // 0xC
-} PyObject;
-
-typedef struct  PyIntObject : public _object {
-		long ob_ival;
-};
-typedef struct  PyUnicodeObject : public _object {
-		Py_ssize_t length;		/* Length of raw Unicode data in buffer */
-	wchar_t* str;		/* Raw Unicode buffer */
-	long hash;			/* Hash value; -1 if not set */
-	PyObject* defenc;		/* (Default) Encoded version as Python
-				   string, or NULL; this is used for
-				   implementing the buffer protocol */
-} ;
-
-typedef struct  PyStringObject  : public _object {
-	Py_ssize_t ob_size;
-		long ob_shash;
-	int ob_sstate;
-	char ob_sval[1];
-
-	/* Invariants:
-	 *     ob_sval contains space for 'ob_size+1' elements.
-	 *     ob_sval[ob_size] == 0.
-	 *     ob_shash is the hash of the string or -1 if not computed yet.
-	 *     ob_sstate != 0 iff the string object is in stringobject.c's
-	 *       'interned' dictionary; in this case the two references
-	 *       from 'interned' to this object are *not counted* in ob_refcnt.
-	 */
-} ;
-
-typedef struct PyTupleObject : public _object {
-		PyObject* ob_item[1];
-
-	/* ob_item contains space for 'ob_size' elements.
-	 * Items must normally not be NULL, except during construction when
-	 * the tuple is not yet visible outside the function that builds it.
-	 */
-} ;
-
-
 
 
 typedef struct bufferinfo {
@@ -171,7 +127,7 @@ typedef struct bufferinfo {
 typedef void (*freefunc)(void*);
 typedef void (*destructor)(PyObject*);
 typedef int (*printfunc)(PyObject*, FILE*, int);
-typedef PyObject* (*getattrfunc)(PyObject*, const char *);
+typedef PyObject* (*getattrfunc)(PyObject*, const char*);
 typedef PyObject* (*getattrofunc)(PyObject*, PyObject*);
 typedef int (*setattrfunc)(PyObject*, char*, PyObject*);
 typedef int (*setattrofunc)(PyObject*, PyObject*, PyObject*);
@@ -192,8 +148,8 @@ typedef PyObject* (*ternaryfunc)(PyObject*, PyObject*, PyObject*);
 typedef int (*inquiry)(PyObject*);
 typedef Py_ssize_t(*lenfunc)(PyObject*);
 typedef int (*coercion)(PyObject**, PyObject**);
-typedef PyObject* (*intargfunc)(PyObject*, int) ;
-typedef PyObject* (*intintargfunc)(PyObject*, int, int) ;
+typedef PyObject* (*intargfunc)(PyObject*, int);
+typedef PyObject* (*intintargfunc)(PyObject*, int, int);
 typedef PyObject* (*ssizeargfunc)(PyObject*, Py_ssize_t);
 typedef PyObject* (*ssizessizeargfunc)(PyObject*, Py_ssize_t, Py_ssize_t);
 typedef int(*intobjargproc)(PyObject*, int, PyObject*);
@@ -400,21 +356,92 @@ typedef struct _typeobject {
 
 	std::string GetFullName() const {
 		std::string temp = std::string(this->tp_name);
-		for (auto parrent = GetParrentType(); parrent ; parrent = parrent->GetParrentType()) {
+		for (auto parrent = GetParrentType(); parrent; parrent = parrent->GetParrentType()) {
 			if (!parrent) break;
 			auto name = parrent->GetName();
 			if (!name) break;
-			temp = temp + "."  + std::string(name);
+			temp = temp + "." + std::string(name);
 		}
 		return temp;
 	}
 	/* these must be last and never explicitly initialized */
-	
-	template< typename T>
-	T GetAttribute(PyObject* obj, PyStringObject* str) const {
-		return (T)(this->tp_getattro(obj, str));
+
+	template< typename T >
+	inline T GetAttribute(PyObject* obj, PyObject* nametest) const {
+		auto pfn_getatteo = this->tp_getattro;
+		if (!pfn_getatteo) return nullptr;
+		return (T)(pfn_getatteo(obj, nametest));
 	}
 
 
 
 } PyTypeObject;
+
+
+ struct PyObject {
+    // int vtable; 
+    //struct PyObject* _ob_next;	
+    //struct PyObject* _ob_prev; // _PyObject_HEAD_EXTRA
+    size_t ob_refcnt;		//    0x8
+     _typeobject* ob_type; // 0xC
+	template< typename T >
+	inline T GetAttribute(PyObject* nametest)  {
+		auto o_t = this->ob_type;
+		if (!o_t) return nullptr;
+		return o_t->GetAttribute<T>(this, (nametest));
+	}
+
+	inline std::string GetFullName()  {
+		auto o_t = this->ob_type;
+		if (!o_t) return "";
+		auto name = o_t->GetFullName();
+		return name;
+	}
+	inline const char* GetName()  {
+		auto o_t = this->ob_type;
+		if (!o_t) return nullptr;
+		return o_t->GetName();
+	}
+} ;
+
+typedef struct  PyIntObject : public PyObject {
+		long ob_ival;
+};
+typedef struct  PyUnicodeObject : public PyObject {
+		Py_ssize_t length;		/* Length of raw Unicode data in buffer */
+	wchar_t* str;		/* Raw Unicode buffer */
+	long hash;			/* Hash value; -1 if not set */
+	PyObject* defenc;		/* (Default) Encoded version as Python
+				   string, or NULL; this is used for
+				   implementing the buffer protocol */
+} ;
+
+
+
+typedef struct  PyStringObject  : public PyObject {
+	Py_ssize_t ob_size;
+		long ob_shash;
+	int ob_sstate;
+	char ob_sval[1];
+
+	/* Invariants:
+	 *     ob_sval contains space for 'ob_size+1' elements.
+	 *     ob_sval[ob_size] == 0.
+	 *     ob_shash is the hash of the string or -1 if not computed yet.
+	 *     ob_sstate != 0 iff the string object is in stringobject.c's
+	 *       'interned' dictionary; in this case the two references
+	 *       from 'interned' to this object are *not counted* in ob_refcnt.
+	 */
+} ;
+
+typedef struct PyTupleObject : public PyObject {
+		PyObject* ob_item[1];
+
+	/* ob_item contains space for 'ob_size' elements.
+	 * Items must normally not be NULL, except during construction when
+	 * the tuple is not yet visible outside the function that builds it.
+	 */
+} ;
+
+
+

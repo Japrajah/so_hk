@@ -295,6 +295,14 @@ public:
 
 		//bool invisible_;
 		//double visiblityTime_;
+	inline const char* GetNameClass() {
+		auto etype = this->E_type();
+		if (!etype) return nullptr;
+		auto tp = etype->pClass_;
+		if (!tp) return nullptr;
+		return tp->GetName();
+	}
+
 #ifdef DEBUG
 	void DumpProperties()
 	{
