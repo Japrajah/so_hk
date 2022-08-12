@@ -1,6 +1,7 @@
 ﻿#include "render/draw.h"
 #include "game/BigWorld.hh"
 #include "memory/Addr.hh"
+#include <iostream>
 typedef LRESULT(CALLBACK* WNDPROC)(HWND, UINT, WPARAM, LPARAM);
  
 int(__stdcall* oPresent)(LPDIRECT3DDEVICE9 _this, CONST RECT* pSourceRect, CONST RECT* pDestRect, HWND hDestWindowOverride, CONST RGNDATA* pDirtyRegion) = 0;
@@ -31,24 +32,51 @@ void DrawEsp()
 	auto list_position = entities._first_;
 	for (size_t i = 0; i < count; i++)
 	{
-		count = entities.count +5;
+		count = entities.count +2;
 		if (!list_position) break;
 		auto entity = entity_mngr->getEntity(list_position->EntityId);
 		list_position = list_position->_next;
 		if (!entity) continue;
 		Vector3 position = entity->position();
 		Vector2 ScreenPos;
-		if (!camera->WorldToScreen(position,&ScreenPos)) continue;
-		auto etype = entity->type();
-		if (!etype) continue;
-		auto class_type = etype->pClass_;
-		if (!class_type) continue;
-		auto full_name = class_type->GetFullName();
-        CDraw::Text(ScreenPos.x, ScreenPos.y, full_name.c_str());
-	
+		if ((!camera->WorldToScreen(position, &ScreenPos)) && init) continue;
+		auto obtype = entity->ob_type;
+		if (!obtype) continue;
+
+		const char* shortName = obtype->GetName();
+		if (!strcmp(shortName ,"Avatar"));
+		{
+			if (obtype->tp_getattro)
+			{
+				auto py_STR = PyHelpers::PyString_InternFromString("name");
+				if (py_STR)
+				{
+
+					PyUnicodeObject* playername = obtype->GetAttribute<PyUnicodeObject*>(entity, py_STR);
+					if (playername)
+					{
+						if (playername->str)
+						{
+							CDraw::TextW(ScreenPos.x, ScreenPos.y, playername->str);
+						}
+					}
+					
+				}
+
+			
+
+				
+			
+			}
+			
+		}
+
+
+		
+		//entity->DumpProperties();
 
 	}
-
+	init = true;
 
 }
 

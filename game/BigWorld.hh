@@ -3,9 +3,17 @@
 #include "Vectors.hh"
 #include "python.hh"
 #include <map>
+#include <vector>
+#ifdef DEBUG
+#include <iostream>
+#endif
 #define OFFSET( type, func, offset ) [[nodiscard]] std::add_lvalue_reference_t< type > func()  { return *reinterpret_cast< std::add_pointer_t< type > >( reinterpret_cast< std::uintptr_t >( this ) + offset ); }
 
-
+class PyHelpers
+{
+public:
+	 static PyStringObject* PyString_InternFromString(const char* name);
+};
 
 class Physics;
 class Filter;
@@ -50,24 +58,186 @@ public:
 	//OFFSET(Umbra::Camera, 0x2F0, camera); //   
 };
 
+
+//https://flagbot.ch/lesson6.pdf
+class string_impl
+{
+
+private:
+	const char* str_ptr; //0x0000
+	char pad_0004[12]; //0x0004
+	int length; //0x0010
+	int capacity; //0x0014
+public:
+	const char* c_str()
+	{
+		if (this->capacity >= 0x10)
+		return this->str_ptr;
+
+		return (const char*)this;
+	}
+	size_t lenght() { return this->length; }
+};
+
+static_assert(sizeof(string_impl) == 24, "string_impl size changed");
+
+template <typename T>
+struct vector_impl
+{
+	T* start;
+	T* end;
+	T* max;
+
+		bool at(int idxc, T* ref )
+	     {
+			if (!start) return 0;
+			if (end < &start[idxc]) // out of array idx
+				return false;
+			if (start > &start[idxc]) // negative index
+				return false;
+			*ref = start[idxc];
+			return true;
+	     }
+		int count()
+		{
+			if (!start) return 0;
+			auto offset = 	 (uintptr_t)end - (uintptr_t)start;
+			return offset / sizeof(T);
+		}
+		
+};
+
+
+struct VolatileInfo
+{
+	float	positionPriority_;
+	float	yawPriority_;
+	float	pitchPriority_;
+	float	rollPriority_;
+};
+
+struct DataTypeMetadata
+{
+	int vtable;
+	string_impl name_;
+};
+struct DataTypeImpl
+{
+	int vtable;
+	int id;
+	DataTypeMetadata* metadata;
+	string_impl* GetName()
+	{
+		auto m_data = this->metadata;
+		if (m_data)
+			return &m_data->name_;
+
+		return 0;
+	}
+};
+
+class DataDescription
+{
+public:
+	enum PARSE_OPTIONS
+	{
+		PARSE_DEFAULT,			// Parses all known sections.
+		PARSE_IGNORE_FLAGS = 1	// Ignores the 'Flags' section.
+	};
+	string_impl name_;
+	DataTypeImpl* /*DataTypePtr*/	pDataType_;
+	int			dataFlags_;
+	void*  /*PyObjectPtr*/	pInitialValue_;
+	void*	pDefaultSection_;
+	int			index_;
+	int			localIndex_;		// Index into local prop value vector.
+	int			eventStampIndex_;	// Index into time-stamp vector.
+	int			clientServerFullIndex_;
+	int			detailLevel_;
+	int			databaseLength_;
+	int unknown;
+};
+
+
+
+
+
+
+struct EntityDescription_vftbl {
+	//void (__thiscall*Destructor_BaseUserDataObjectDescription)();
+	//void (__thiscall*parse)(string_impl name,
+	//	void* pSection, bool isFinal);	
+	//DataDescription(__thiscall*findProperty)(string_impl name);
+};
+
+enum BWCompressionType : int
+{
+	BW_COMPRESSION_NONE,
+
+	BW_COMPRESSION_ZIP_1,
+	BW_COMPRESSION_ZIP_2,
+	BW_COMPRESSION_ZIP_3,
+	BW_COMPRESSION_ZIP_4,
+	BW_COMPRESSION_ZIP_5,
+	BW_COMPRESSION_ZIP_6,
+	BW_COMPRESSION_ZIP_7,
+	BW_COMPRESSION_ZIP_8,
+	BW_COMPRESSION_ZIP_9,
+
+	BW_COMPRESSION_ZIP_BEST_SPEED = BW_COMPRESSION_ZIP_1,
+	BW_COMPRESSION_ZIP_BEST_COMPRESSION = BW_COMPRESSION_ZIP_9,
+
+	BW_COMPRESSION_DEFAULT_INTERNAL,
+	BW_COMPRESSION_DEFAULT_EXTERNAL,
+};
+
+
+
+
+struct EntityDescription {
+	EntityDescription_vftbl* vtbl;
+	string_impl  name; 
+	vector_impl <DataDescription> properties_; // From  : BaseUserDataObjectDescription
+	char padstdMap[8]; // std map // From  : BaseUserDataObjectDescription
+	/// END : BaseUserDataObjectDescription
+	// EntityDescription Begin
+	int /*EntityTypeID*/		index_;
+    int /*EntityTypeID*/		clientIndex_;
+	std::string			clientName_;
+	bool				hasCellScript_;
+	bool				hasBaseScript_;
+	bool				hasClientScript_;
+	char pad[0x1]; // unused;
+	VolatileInfo 		volatileInfo_;
+	BWCompressionType	internalNetworkCompressionType_;
+	BWCompressionType	externalNetworkCompressionType_;
+};
+
+
+
+
+
+
+
 //https://github.com/v2v3v4/BigWorld-Engine-2.0.1/blob/620e0f244739188a5b183f1f28b278f16d182370/src/client/entity_type.hpp
 struct EntityType
 {
-	class EntityDescription* description_;
-	class PyObject* pModule_;
+	 EntityDescription* description_;
+	 PyObject* pModule_;
 	 PyTypeObject* pClass_;
 	 PyTypeObject* pPlayerClass_;
 	 
 };
-
-class Entity /*: public PyInstancePlus : public PyObject*/
+/*: public PyInstancePlus : public PyObject*/
+class Entity : public  PyObject
 {
 public:
 	OFFSET(int, id, 0x24); // 0x24 EntityID
 	OFFSET(Vector3, position, 0x28); // 0x28 //  real type Position3D == Vector3[2]
 	OFFSET(Vector3, velocity, 0x34); // 0x34
 	OFFSET(Vector3, auxVolatile, 0x40);	//  0x40 	// 0 - [Head] Yaw of Entity. 	// 1 - Head Pitch of Entity.
-	OFFSET(EntityType*, type, 0x4c); // 0x4c
+	OFFSET(EntityType*, E_type, 0x4c); // 0x4c
+
 
 	 //int unk_gap  // 0x50
 		//PyObject* pPyCell_; // PyServer 0x54
@@ -125,10 +295,43 @@ public:
 
 		//bool invisible_;
 		//double visiblityTime_;
+#ifdef DEBUG
+	void DumpProperties()
+	{
+
+		    auto etype = this->E_type();
+		    if (!etype) return;
+			auto pclass = etype->pClass_;
+			if (!pclass) return;
+			auto description = etype->description_;
+			if (!description) return;
+			auto properties = description->properties_;
 
 
+			auto fullname = this->ob_type->GetFullName();
+
+			std::cout << fullname << "\n{ \n";
+
+			for (int bb = 0; bb < properties.count(); bb++)
+			{
+				DataDescription desc{};
+				if (!properties.at(bb, &desc)) return;
+
+				auto Data_type = desc.pDataType_;
+				if (!Data_type)  continue;
+				auto type_string = Data_type->GetName();
+				if (!type_string) continue;
+
+
+				std::cout << type_string->c_str() << " " << desc.name_.c_str() << " \n";
+
+			}
+			std::cout << "\n} \n";
+
+
+	}
+#endif
 };
-struct myMap;
 
 struct dymmy
 {

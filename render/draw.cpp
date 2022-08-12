@@ -1,5 +1,7 @@
 #include "draw.h"
 #pragma comment (lib, "d3dx9.lib")
+
+// pepeEZ PASTED FROM UC
 void CDraw::Setup(LPDIRECT3DDEVICE9 device)
 {
 	if (CDraw::pDevice) return;
@@ -27,4 +29,14 @@ void CDraw::Text( unsigned int x, unsigned int y, const char* Message ,D3DCOLOR 
 	rct.top = y;
 	rct.bottom = rct.top + 200;
 	m_font->DrawTextA(NULL, Message, -1, &rct, 0, color);
+}
+
+void CDraw::TextW(unsigned int x, unsigned int y, const wchar_t* Message, D3DCOLOR color)
+{	// Create a colour for the text
+	RECT rct; //Font
+	rct.left = x;
+	rct.right = 1680;
+	rct.top = y;
+	rct.bottom = rct.top + 200;
+	m_font->DrawTextW(NULL, Message, -1, &rct, 0, color);
 }

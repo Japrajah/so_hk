@@ -112,6 +112,46 @@ typedef struct _object {
     struct _typeobject* ob_type; // 0xC
 } PyObject;
 
+typedef struct  PyIntObject : public _object {
+		long ob_ival;
+};
+typedef struct  PyUnicodeObject : public _object {
+		Py_ssize_t length;		/* Length of raw Unicode data in buffer */
+	wchar_t* str;		/* Raw Unicode buffer */
+	long hash;			/* Hash value; -1 if not set */
+	PyObject* defenc;		/* (Default) Encoded version as Python
+				   string, or NULL; this is used for
+				   implementing the buffer protocol */
+} ;
+
+typedef struct  PyStringObject  : public _object {
+	Py_ssize_t ob_size;
+		long ob_shash;
+	int ob_sstate;
+	char ob_sval[1];
+
+	/* Invariants:
+	 *     ob_sval contains space for 'ob_size+1' elements.
+	 *     ob_sval[ob_size] == 0.
+	 *     ob_shash is the hash of the string or -1 if not computed yet.
+	 *     ob_sstate != 0 iff the string object is in stringobject.c's
+	 *       'interned' dictionary; in this case the two references
+	 *       from 'interned' to this object are *not counted* in ob_refcnt.
+	 */
+} ;
+
+typedef struct PyTupleObject : public _object {
+		PyObject* ob_item[1];
+
+	/* ob_item contains space for 'ob_size' elements.
+	 * Items must normally not be NULL, except during construction when
+	 * the tuple is not yet visible outside the function that builds it.
+	 */
+} ;
+
+
+
+
 typedef struct bufferinfo {
 	void* buf;
 	PyObject* obj;        /* borrowed reference */
@@ -131,7 +171,7 @@ typedef struct bufferinfo {
 typedef void (*freefunc)(void*);
 typedef void (*destructor)(PyObject*);
 typedef int (*printfunc)(PyObject*, FILE*, int);
-typedef PyObject* (*getattrfunc)(PyObject*, char*);
+typedef PyObject* (*getattrfunc)(PyObject*, const char *);
 typedef PyObject* (*getattrofunc)(PyObject*, PyObject*);
 typedef int (*setattrfunc)(PyObject*, char*, PyObject*);
 typedef int (*setattrofunc)(PyObject*, PyObject*, PyObject*);
@@ -349,6 +389,8 @@ typedef struct _typeobject {
 	PyObject* tp_weaklist;
 	destructor tp_del;
 
+
+
 	const char* GetName() const {
 		return this->tp_name;
 	}
@@ -368,5 +410,11 @@ typedef struct _typeobject {
 	}
 	/* these must be last and never explicitly initialized */
 	
+	template< typename T>
+	T GetAttribute(PyObject* obj, PyStringObject* str) const {
+		return (T)(this->tp_getattro(obj, str));
+	}
+
+
 
 } PyTypeObject;
