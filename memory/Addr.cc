@@ -22,6 +22,7 @@ void Addr::Setup()
 
 	//Addr::pfn_posixFileOpen = utils::sigscan("55 8B EC 6A ? 68 ? ? ? ? 64 ? ? ? ? ? ? ? ? ? 04 ? 00 A1 ? ? ? ? 33 C5 89 45 ? 56 57 50 8D 45 ? 64 ? ? ? ? ? ? ? ? ? 08 8D");
 	Addr::pfn_aes_decrypt = utils::read_address(utils::read_address(utils::sigscan("E8 ? ? ? ? 83 C4 0C 8B 08 8B 45 F0"), 1, 5), 1, 5);
+//	Addr::pfn_zip_unpack = utils::read_address(utils::read_address(utils::sigscan("E8 ? ? ? ? 83 C4 0C EB 09"), 1, 5), 1, 5);
 
 
 #endif 

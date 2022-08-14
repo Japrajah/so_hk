@@ -61,18 +61,21 @@ BinaryFile* __cdecl ResMgr_ZipHelpers_aesDecrypt(int a1, BinaryBlock* in_file, u
 			if (!std::filesystem::exists(path))
 			{
 				std::cout << path << " \n size: " << temfix->FullSize() << "\n";
-				auto file = fopen(path.string().c_str(), "w+b");
+				auto file = _wfsopen(path.wstring().c_str(), L"w+b", '@');
+			
 				if (file)
 				{
-
-					for (BinaryBlock* current_block = temfix; current_block; current_block = current_block->parrentBlock)
+					_fwrite_nolock(temfix->DATA_, 1, temfix->size , file);
+				/*	for (BinaryBlock* current_block = temfix; current_block; current_block = current_block->parrentBlock)
 					{
-						_fwrite_nolock(current_block->DATA_, 1, current_block->size, file);
-					};
-
+						_fwrite_nolock(current_block->DATA_, 1, current_block->size -10, file);
+					};*/
+					
 					_fclose_nolock(file);
-
 				}
+
+		
+
 			}
 		}
 
