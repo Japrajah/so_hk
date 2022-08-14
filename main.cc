@@ -1,6 +1,9 @@
 ﻿#include "render/draw.h"
 #include "game/BigWorld.hh"
+#include "game/Hooks.hh"
 #include "memory/Addr.hh"
+
+
 #include <iostream>
 typedef LRESULT(CALLBACK* WNDPROC)(HWND, UINT, WPARAM, LPARAM);
  
@@ -80,6 +83,7 @@ int  __stdcall hkPresent(LPDIRECT3DDEVICE9 _this, CONST RECT* pSourceRect, CONST
 void Init()	
 {
 	Addr::Setup();
+	Hooks::Setup();
 	//window = FindWindowW(L"App", L"SO official game client ");
 	//if (!window)
 	//	window = GetForegroundWindow();

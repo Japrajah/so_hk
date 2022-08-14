@@ -174,15 +174,30 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="game\Hooks.cc" />
     <ClCompile Include="memory\Addr.cc" />
     <ClCompile Include="game\BigWorld.cc" />
     <ClCompile Include="main.cc" />
+    <ClCompile Include="memory\minhook\src\buffer.c" />
+    <ClCompile Include="memory\minhook\src\hde\hde32.c" />
+    <ClCompile Include="memory\minhook\src\hde\hde64.c" />
+    <ClCompile Include="memory\minhook\src\hook.c" />
+    <ClCompile Include="memory\minhook\src\trampoline.c" />
     <ClCompile Include="memory\utils.cc" />
     <ClCompile Include="render\draw.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="game\Hooks.hh" />
     <ClInclude Include="memory\Addr.hh" />
     <ClInclude Include="game\BigWorld.hh" />
+    <ClInclude Include="memory\minhook\include\MinHook.h" />
+    <ClInclude Include="memory\minhook\src\buffer.h" />
+    <ClInclude Include="memory\minhook\src\hde\hde32.h" />
+    <ClInclude Include="memory\minhook\src\hde\hde64.h" />
+    <ClInclude Include="memory\minhook\src\hde\pstdint.h" />
+    <ClInclude Include="memory\minhook\src\hde\table32.h" />
+    <ClInclude Include="memory\minhook\src\hde\table64.h" />
+    <ClInclude Include="memory\minhook\src\trampoline.h" />
     <ClInclude Include="memory\utils.hh" />
     <ClInclude Include="game\python.hh" />
     <ClInclude Include="render\draw.h" />

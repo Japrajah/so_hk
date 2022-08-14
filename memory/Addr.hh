@@ -10,6 +10,7 @@ public:
 	ADD_PTR(pfn_Steam_Present);
 	ADD_PTR(g_imp_Camera);
 	ADD_PTR(pfn_Phyton_PyString_InternFromString); //
+	ADD_PTR(pfn_aes_decrypt); //
 
 
 };

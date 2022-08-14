@@ -108,6 +108,42 @@ struct vector_impl
 };
 
 
+
+
+struct BinaryBlock
+{
+	void* vtable;
+	int ReferenceCount;
+	void* DATA_;
+	char tag[4];
+	long long size;  
+	BinaryBlock* parrentBlock;
+	bool canZip_;
+
+	long long FullSize()
+	{
+		auto block = this;
+		long long fullsize = 0;
+		for (BinaryBlock* current_block = block; current_block; current_block = current_block->parrentBlock)
+		{
+			fullsize += current_block->size;
+			if (!fullsize) break;
+		}
+		return fullsize;
+	}
+};
+
+
+struct BinaryFile
+{
+	BinaryBlock* block;
+	string_impl* zip_name;
+	string_impl* file_name;
+
+};
+
+
+
 struct VolatileInfo
 {
 	float	positionPriority_;
