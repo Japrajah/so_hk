@@ -407,6 +407,10 @@ typedef struct _typeobject {
 typedef struct  PyIntObject : public PyObject {
 		long ob_ival;
 };
+
+typedef struct  PyInt8Object : public PyObject {
+	__int8 ob_ival;
+};
 typedef struct  PyUnicodeObject : public PyObject {
 		Py_ssize_t length;		/* Length of raw Unicode data in buffer */
 	wchar_t* str;		/* Raw Unicode buffer */
@@ -415,7 +419,15 @@ typedef struct  PyUnicodeObject : public PyObject {
 				   string, or NULL; this is used for
 				   implementing the buffer protocol */
 } ;
-
+typedef struct  PyDEBUGObject : public PyObject {
+	int* ob_ival1;
+	int* ob_ival2;
+	int* ob_ival3;
+	int* ob_ival4;
+	int* ob_ival5;
+	int* ob_ival6;
+	int* ob_ival7;
+};
 
 
 typedef struct  PyStringObject  : public PyObject {

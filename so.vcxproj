@@ -175,6 +175,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="game\Hooks.cc" />
+    <ClCompile Include="imgui\imgui.cpp" />
+    <ClCompile Include="imgui\imgui_draw.cpp" />
+    <ClCompile Include="imgui\imgui_impl_dx9.cpp" />
+    <ClCompile Include="imgui\imgui_impl_win32.cpp" />
+    <ClCompile Include="imgui\imgui_tables.cpp" />
+    <ClCompile Include="imgui\imgui_widgets.cpp" />
     <ClCompile Include="memory\Addr.cc" />
     <ClCompile Include="game\BigWorld.cc" />
     <ClCompile Include="main.cc" />
@@ -188,6 +194,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game\Hooks.hh" />
+    <ClInclude Include="imgui\imconfig.h" />
+    <ClInclude Include="imgui\imgui.h" />
+    <ClInclude Include="imgui\imgui_impl_dx9.h" />
+    <ClInclude Include="imgui\imgui_impl_win32.h" />
+    <ClInclude Include="imgui\imgui_internal.h" />
+    <ClInclude Include="imgui\imstb_rectpack.h" />
+    <ClInclude Include="imgui\imstb_textedit.h" />
+    <ClInclude Include="imgui\imstb_truetype.h" />
     <ClInclude Include="memory\Addr.hh" />
     <ClInclude Include="game\BigWorld.hh" />
     <ClInclude Include="memory\minhook\include\MinHook.h" />

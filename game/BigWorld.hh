@@ -15,6 +15,8 @@ public:
 	 static PyStringObject* PyString_InternFromString(const char* name);
 };
 
+#define PY_PROPERTY(type,name)  type name(){ return this->GetAttribute<type>( PyName(#name) ); }
+
 class Physics;
 class Filter;
 struct EntityType;
@@ -27,31 +29,24 @@ public:
 	OFFSET(float, Width, 0x30);
 	OFFSET(float, Hight, 0x38);
 	static ImpCamera* Instance();
-	bool WorldToScreen(Vector3 position, Vector2* ScreenPos)
-	{
-		if (!this) return false;
-		auto height = this->Hight();
-		auto width = this->Width();
-		Matrix4x4 matrix = this->view_matirx();
-		float w = 0.0f;
-		ScreenPos->x = matrix.m[0][0] * position.x + matrix.m[0][1] * position.y + matrix.m[0][2] * position.z + matrix.m[0][3];
-		ScreenPos->y = matrix.m[1][0] * position.x + matrix.m[1][1] * position.y + matrix.m[1][2] * position.z + matrix.m[1][3];
-		w = matrix.m[3][0] * position.x + matrix.m[3][1] * position.y + matrix.m[3][2] * position.z + matrix.m[3][3];
-		if (w < 0.01f)
-			return false;
-		float invw = 1.0f / w;
-		ScreenPos->x *= invw;
-		ScreenPos->y *= invw;
-		float x = width / 2;
-		float y = height / 2;
-		x += 0.5 * ScreenPos->x * width + 0.5;
-		if (x > 10000 || x < -10000) return false;
-		y -= 0.5 * ScreenPos->y * height + 0.5;
-		if (y < -10000 || y > 10000)return false;
 
-		*ScreenPos = { x , y };
+	bool WorldToScreen(Vector3 pos ,Vector2* outScreen) {
+		float* matrix = (float*)this->view_matirx().m;
+		float sw= this->Width(), sh = this->Hight();
+	    float x = matrix[0] * pos.x + matrix[1] * pos.y + matrix[2] * pos.z + matrix[3];
+		float y = matrix[4] * pos.x + matrix[5] * pos.y + matrix[6] * pos.z + matrix[7]; 
+		float w = matrix[12] * pos.x + matrix[13] * pos.y + matrix[14] * pos.z + matrix[15];
+		if (w < 0.01f) return false;
+		x *= 1.f / w;
+		outScreen->x = (sw * 0.5f) + (0.5f * x * sw + 0.5f);
+		if (outScreen->x > 10000 || outScreen->x < -10000) return false;
+		y *= 1.f / w;
+		outScreen->y = (sh * 0.5f) - ( 0.5f * y * sh + 0.5f);
+		if (outScreen->y > 10000 || outScreen->y < -10000) return false;
 		return true;
 	}
+
+
 	// need test after restarts↓
 	//OFFSET(Umbra::Cell, 0x2e8, cell); //    Umbra::Cell : Umbra::ReferenceCount
 	//OFFSET(Umbra::ImpCamera, 0x2EC, THIS); //   
@@ -283,7 +278,18 @@ public:
 	OFFSET(bool, isPoseVolatile_, 0x60); // 0x60
 	OFFSET(bool, isDestroyed_, 0x61);
 
+	// test on localplayer latter need create diffrent class for every entity 
+	PY_PROPERTY(PyUnicodeObject*, name);
+	PY_PROPERTY(PyInt8Object*, teamID);
+	PY_PROPERTY(PyInt8Object*, is_burning);
+	PY_PROPERTY(PyInt8Object*, dead);
+	PY_PROPERTY(PyInt8Object*, canTakeDamage);
+	PY_PROPERTY(PyInt8Object*, CanShoot);
+	PY_PROPERTY(PyInt8Object*, CanUse);
+	
 
+	// test on localplayer latter need create diffrent class for every entity 
+	// 
 	//	ChunkEmbodimentPtr	primaryEmbodiment_; // 0x64
 
 	//	ChunkEmbodiments	auxiliaryEmbodiments_;
@@ -384,9 +390,10 @@ struct dymmy
 };
 struct myMapEntry
 {
-	myMapEntry* _next; // pointer to _next
-	dymmy* pp_Entity;
+	myMapEntry* _next;
+	myMapEntry* _prev;
 	int EntityId;
+	dymmy* pp_Entity;
 };
 
 struct myMap
@@ -409,3 +416,5 @@ public:
 	static EntityManager* instance();
 	Entity* __thiscall getEntity(int id, bool b_check_cache = false);
 };
+
+#undef PY_PROPERTY
