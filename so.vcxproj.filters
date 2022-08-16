@@ -21,9 +21,6 @@
     <ClCompile Include="memory\utils.cc">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="render\draw.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
     <ClCompile Include="game\BigWorld.cc">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
@@ -66,12 +63,12 @@
     <ClCompile Include="imgui\imgui_widgets.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="render\draw.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="memory\utils.hh">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="render\draw.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="game\python.hh">
@@ -135,6 +132,12 @@
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="imgui\imstb_truetype.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="menu\global_vars.hh">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="render\draw.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

@@ -194,6 +194,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game\Hooks.hh" />
+    <ClInclude Include="menu\global_vars.hh" />
     <ClInclude Include="imgui\imconfig.h" />
     <ClInclude Include="imgui\imgui.h" />
     <ClInclude Include="imgui\imgui_impl_dx9.h" />
@@ -214,8 +215,8 @@
     <ClInclude Include="memory\minhook\src\trampoline.h" />
     <ClInclude Include="memory\utils.hh" />
     <ClInclude Include="game\python.hh" />
-    <ClInclude Include="render\draw.h" />
     <ClInclude Include="game\Vectors.hh" />
+    <ClInclude Include="render\draw.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

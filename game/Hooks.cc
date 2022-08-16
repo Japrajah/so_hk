@@ -2,10 +2,11 @@
 #include "../memory/Addr.hh"
 #include "../memory/minhook/include/MinHook.h"
 #include "BigWorld.hh"
-
+#ifdef DEBUG
 #include <cstdio>
 #include <algorithm>
 #include <filesystem>
+
 
 auto oZipHelpers_aesDecrypt = (BinaryFile *(*__cdecl)(int a1, BinaryBlock *a2, unsigned __int8 a3))0;
 
@@ -82,13 +83,17 @@ BinaryFile* __cdecl ResMgr_ZipHelpers_aesDecrypt(int a1, BinaryBlock* in_file, u
 	return result;
 }
 
-
+#endif
 
 void Hooks::Setup()
 {
-	MH_Initialize();
-	CreateHook(&Addr::pfn_aes_decrypt, &ResMgr_ZipHelpers_aesDecrypt, &oZipHelpers_aesDecrypt);
-	MH_EnableHook(0);
+#ifdef DEBUG
 
+
+	/*MH_Initialize();
+	CreateHook(&Addr::pfn_aes_decrypt, &ResMgr_ZipHelpers_aesDecrypt, &oZipHelpers_aesDecrypt);
+	MH_EnableHook(0);*/
+
+#endif // DEBUG
 }
 

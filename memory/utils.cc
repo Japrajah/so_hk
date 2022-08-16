@@ -115,6 +115,8 @@ uintptr_t utils::sigscan(const char* pattern, const char* mod  )
 	uintptr_t moduleAdressmm = 0;
 	moduleAdressmm = (uintptr_t)GetModuleHandleA(mod);
 	const auto dosHeadermm = (PIMAGE_DOS_HEADER)moduleAdressmm;
+	if (!dosHeadermm)
+		return false;
 	const auto ntHeadersmm = (PIMAGE_NT_HEADERS)((std::uint8_t*)moduleAdressmm + dosHeadermm->e_lfanew);
 	const auto sizeOfImage = ntHeadersmm->OptionalHeader.SizeOfImage;
 	const std::vector<int> patternBytesmm  = pattern_to_byte(pattern);
@@ -139,5 +141,6 @@ uintptr_t utils::sigscan(const char* pattern, const char* mod  )
 }
 
 uintptr_t utils::read_address(uintptr_t address, int offset, int size) {
-	return (address + size + *(int*)(address + offset));
+	
+	return address ? (address + size + *(int*)(address + offset)) : 0;
 }

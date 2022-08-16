@@ -7,8 +7,8 @@
 #ifdef DEBUG
 #include <iostream>
 #endif
-#define OFFSET( type, func, offset ) [[nodiscard]] std::add_lvalue_reference_t< type > func()  { return *reinterpret_cast< std::add_pointer_t< type > >( reinterpret_cast< std::uintptr_t >( this ) + offset ); }
-
+#define OFFSET( type, func, offset ) [[nodiscard]] inline  type  func()  { return *( type *)( reinterpret_cast< std::uintptr_t >( this ) + offset ); }
+//#define OFFSET( type, func, offset ) [[nodiscard]] std::add_lvalue_reference_t< type > func()  { return *reinterpret_cast< std::add_pointer_t< type > >( reinterpret_cast< std::uintptr_t >( this ) + offset ); }
 class PyHelpers
 {
 public:
@@ -134,7 +134,6 @@ struct BinaryFile
 	BinaryBlock* block;
 	string_impl* zip_name;
 	string_impl* file_name;
-
 };
 
 
@@ -263,6 +262,18 @@ struct EntityType
 class Entity : public  PyObject
 {
 public:
+
+
+	PY_PROPERTY(PyUnicodeObject*, name);
+	PY_PROPERTY(PyInt8Object*, teamID);
+	PY_PROPERTY(PyInt8Object*, is_burning);
+	PY_PROPERTY(PyInt8Object*, dead);
+	PY_PROPERTY(PyInt8Object*, canTakeDamage);
+	PY_PROPERTY(PyInt8Object*, CanShoot);
+	PY_PROPERTY(PyInt8Object*, CanUse);
+
+
+
 	OFFSET(int, id, 0x24); // 0x24 EntityID
 	OFFSET(Vector3, position, 0x28); // 0x28 //  real type Position3D == Vector3[2]
 	OFFSET(Vector3, velocity, 0x34); // 0x34
@@ -279,14 +290,7 @@ public:
 	OFFSET(bool, isDestroyed_, 0x61);
 
 	// test on localplayer latter need create diffrent class for every entity 
-	PY_PROPERTY(PyUnicodeObject*, name);
-	PY_PROPERTY(PyInt8Object*, teamID);
-	PY_PROPERTY(PyInt8Object*, is_burning);
-	PY_PROPERTY(PyInt8Object*, dead);
-	PY_PROPERTY(PyInt8Object*, canTakeDamage);
-	PY_PROPERTY(PyInt8Object*, CanShoot);
-	PY_PROPERTY(PyInt8Object*, CanUse);
-	
+
 
 	// test on localplayer latter need create diffrent class for every entity 
 	// 
@@ -348,7 +352,7 @@ public:
 #ifdef DEBUG
 	void DumpProperties()
 	{
-
+		
 		    auto etype = this->E_type();
 		    if (!etype) return;
 			auto pclass = etype->pClass_;
@@ -393,7 +397,7 @@ struct myMapEntry
 	myMapEntry* _next;
 	myMapEntry* _prev;
 	int EntityId;
-	dymmy* pp_Entity;
+	Entity* pp_Entity;
 };
 
 struct myMap
