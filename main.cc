@@ -202,7 +202,7 @@ int  __stdcall hkPresent(LPDIRECT3DDEVICE9 pDevice, CONST RECT* pSourceRect, CON
 	return oPresent(pDevice, pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);
 }
 
-
+//TODO reverse process /sogame.exe+1A426A8  == disable ac /detection and find where it send bad request
 
 void Init()	
 {
