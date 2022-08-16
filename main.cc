@@ -207,12 +207,11 @@ int  __stdcall hkPresent(LPDIRECT3DDEVICE9 pDevice, CONST RECT* pSourceRect, CON
 void Init()	
 {
 	Addr::Setup();
-	
 	Hooks::Setup();
 	
-	auto Steam_PresentScene = *(uintptr_t**)(Addr::pfn_Present);
-	*(uintptr_t*)&oPresent = *Steam_PresentScene;
-   Steam_PresentScene[0] = (uintptr_t)&hkPresent; 
+	auto p_PresentScene = *(uintptr_t**)(Addr::pfn_Present);
+	*(uintptr_t*)&oPresent = *p_PresentScene;
+	p_PresentScene[0] = (uintptr_t)&hkPresent;
 }
 
 BOOL APIENTRY DllMain(HINSTANCE hinstDLL, DWORD r, LPVOID lpvReserved)
